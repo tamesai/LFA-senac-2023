@@ -18,14 +18,18 @@ class Tarefa
   end
 
   def obter_horarios(tarefa)
-    horario = /(\b((1?\d)|(2[0-3]))[:h]?\s?(\d{1,2})?\s?(hora|horas)?\b|\bàs\s(1?\d))/
+    horario = /(\bàs\s(1?\d)|(\b((1?\d)|(2[0-3]))(:| )[0-5]\d)|(\d{1,2})?\s?(hora|horas)?\b)/
     regexs = [horario]
 
     for regex in regexs
       tags = tarefa.scan(regex)
-      if tags.length > 0
-        puts 'Horário: ' + tags[0][0]
-        break
+      next unless tags.length > 0
+
+      for tag in tags
+        if !tag[0].nil? && tag[0] != '' && tag[0] != ' '
+          puts 'Horário: ' + tag[0]
+          break
+        end
       end
     end
   end
@@ -49,13 +53,13 @@ class Tarefa
 
     for regex in regexs
       tags = tarefa.scan(regex)
-      if tags.length > 0
-        pessoas = tags[0][0]
-        pessoas.slice! ","
-        pessoas.slice! "e"
-        puts "Pessoas: " + pessoas.split(' ')[1..].inspect
-        break
-      end
+      next unless tags.length > 0
+
+      pessoas = tags[0][0]
+      pessoas.slice! ','
+      pessoas.slice! 'e'
+      puts 'Pessoas: ' + pessoas.split(' ')[1..].inspect
+      break
     end
   end
 
@@ -75,4 +79,4 @@ t = Tarefa.new
 t.iniciar
 
 # Reunião amanhã com Maria e João às 10 #trabalho
-# Ligar para Maria, João e Marie 12:00 13/04 #entrevista #trabalho
+# Ligar para Maria, João e Marie 12 00 13/04 #entrevista #trabalho
